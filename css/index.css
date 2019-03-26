@@ -272,11 +272,18 @@
     overflow: auto;
 }
 
-.draw-panel>form.classify{
+.draw-panel>h1.result {
     position: absolute;
     top: 20px;
+    height: 10%;
+    text-align: center;
+}
+
+.draw-panel>form.classify{
+    position: absolute;
+    top: calc(10% + 20px);
     bottom: 20px;
-    width: calc(100% - 40px);
+    width: calc(100% - 10% - 40px);
     overflow: scroll;
 }
 

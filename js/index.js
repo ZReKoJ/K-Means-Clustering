@@ -158,8 +158,12 @@ function settingPanel(div) {
     let methodSelect = setting.find(".methods");
     methodSelect.on("change", (e) => {
         CONFIG.METHOD = methodSelect.val();
+        setting.find(".full-box").hide();
+        setting.find("." + CONFIG.METHOD).show();
     });
 
+    setting.find(".full-box").hide();
+    setting.find("." + CONFIG.METHOD).show();
     Object.keys(CONFIG.ALGORITHMS).forEach(algorithm => {
         let element = setting.find("." + algorithm);
         Object.keys(CONFIG.ALGORITHMS[algorithm]).forEach(attr => {
