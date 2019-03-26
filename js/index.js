@@ -160,6 +160,18 @@ function settingPanel(div) {
         CONFIG.METHOD = methodSelect.val();
     });
 
+    Object.keys(CONFIG.ALGORITHMS).forEach(algorithm => {
+        let element = setting.find("." + algorithm);
+        Object.keys(CONFIG.ALGORITHMS[algorithm]).forEach(attr => {
+            let attribute = element.find("." + attr);
+            attribute.val(CONFIG.ALGORITHMS[algorithm][attr]);
+            attribute.on("change", (e) => {
+                CONFIG.ALGORITHMS[algorithm][attr] = attribute.val();
+                console.log(CONFIG.ALGORITHMS);
+            });
+        });
+    });
+
     return {};
 }
 
