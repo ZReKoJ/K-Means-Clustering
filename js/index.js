@@ -112,7 +112,16 @@ $(() => {
     makeResizableDiv('.setting-panel');
     makeResizableDiv('.info-panel');
 
-    let bodyInput = $(".setting-panel>.setting input[type='file']#data-body");
+    let settingFunctions = settingPanel('.setting-panel>.setting');
+
+    infoMessages();
+    updateData();
+});
+
+function settingPanel(div) {
+    let setting = $(div);
+
+    let bodyInput = setting.find("input[type='file']#data-body");
     bodyInput.on("change", (e) => {
         let reader = new FileReader();
         reader.onload = function () {
@@ -128,13 +137,31 @@ $(() => {
         };
         reader.readAsText(event.target.files[0]);
     });
+    
+    let delimiterInput = setting.find("input[type='text'].delimiter");
+    delimiterInput.val(CONFIG.DELIMITER);
+    delimiterInput.on("change", (e) => {
+        CONFIG.DELIMITER = delimiterInput.val();
+    });
 
-    let stateButton = $(".setting-panel>.setting button.state");
-    stateButton.on("click", () => {});
+    let stateButton = setting.find("button.state");
+    stateButton.on("click", () => {
+        console.log(getInputsData());
+    });
 
-    infoMessages();
-    updateData();
-});
+    let classSelect = setting.find(".class");
+    classSelect.on("change", (e) => {
+        CONFIG.CLASS = classSelect.val();
+        updateData();
+    });
+
+    let methodSelect = setting.find(".methods");
+    methodSelect.on("change", (e) => {
+        CONFIG.METHOD = methodSelect.val();
+    });
+
+    return {};
+}
 
 function updateData() {
     let table = $(".info-panel>.information>table");
@@ -143,12 +170,18 @@ function updateData() {
     let selectInput = $(".setting-panel .class");
     selectInput.empty();
 
+    let classifyForm = $(".draw-panel form.classify");
+    classifyForm.empty();
+
     let row = undefined;
 
     row = $("<tr></tr>");
     Array(data.columns).fill().forEach((element, index) => {
         let selected = (index + 1 == data.columns) ? "selected" : "";
         selectInput.append($("<option value='" + (index + 1) + "' " + selected + ">" + (index + 1) + "</option>"));
+        if (index + 1 != CONFIG.CLASS) {
+            classifyForm.append($("<div class='data-input'><label>" + (index + 1) + ":</label><input type='number'></div>"))
+        }
         row.append($("<th>" + (index + 1) + "</th>"));
     });
     table.append(row);
@@ -160,6 +193,18 @@ function updateData() {
         });
         table.append(row);
     });
+}
+
+function getInputsData() {
+    let inputsData = {};
+
+    $(".data-input", $(".draw-panel>form.classify")).each((index, element) => {
+        let label = $(element).find("label").text();
+        let input = $(element).find("input[type='number']").val();
+        inputsData[String(label)] = input;
+    });
+
+    return inputsData;
 }
 
 function infoMessages() {

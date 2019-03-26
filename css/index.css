@@ -224,9 +224,77 @@
 }
 
 .draw-panel {
+    position: relative;
+    height: 100%;
     flex-grow: 100;
     display: flex;
     flex-direction: row;
-    background-color: var(--secondary-light-color);
+    justify-content: center;
+    align-items: center;
+    background-color: var(--secondary-color);
     overflow: auto;
+}
+
+.draw-panel>form.classify{
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    width: calc(100% - 40px);
+    overflow: scroll;
+}
+
+.draw-panel>form.classify::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.draw-panel>form.classify::-webkit-scrollbar-track {
+    background: var(--secondary-color);
+    padding: 1px;
+    border-radius: 5px;
+}
+
+.draw-panel>form.classify::-webkit-scrollbar-thumb {
+    background: var(--secondary-dark-color);
+    border-radius: 5px;
+}
+
+.draw-panel>form.classify::-webkit-scrollbar-thumb:hover {
+    background-image: linear-gradient(to right, var(--secondary-light-color), var(--secondary-dark-color));
+}
+
+.draw-panel>form.classify::-webkit-scrollbar-corner {
+    background: var(--secondary-color);
+}
+
+.draw-panel>form.classify>.data-input {
+    color: var(--on-secondary-color);
+    margin-top: 10px;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.draw-panel>form.classify>.data-input>input[type="number"] {
+    background-color: var(--secondary-light-color);
+    padding: 0 5px 0 5px;
+    height: 100%;
+    border: none;
+    font-weight: bold;
+    flex-grow: 100;
+}
+
+.draw-panel>form.classify>.data-input>input[type="number"]:focus {
+    border-bottom: 2px solid var(--secondary-dark-color);
+    outline: none;
+}
+
+.draw-panel>form.classify>.data-input>label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bolder;
+    min-width: 30px;
 }

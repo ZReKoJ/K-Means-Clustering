@@ -55,6 +55,8 @@
         <div class="main">
             <div class="map-panel">
                 <div class="draw-panel">
+                    <form class="classify">
+                    </form>
                 </div>
                 <div class="info-panel">
                     <div class="information">
@@ -77,13 +79,24 @@
                     </div>
                     <div class="box">
                         <div>
+                            <label>Método:</label>
+                            <select class="methods">
+                                <option value="K-Means" selected>K-Medias</option>
+                                <option value="Bayes">Bayes</option>
+                                <option value="Lloyd">Lloyd</option>
+                                <option value="SOM">SOM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div>
                             <label>Clase:</label>
                             <select class="class"></select>
                         </div>
                         <div class="space"></div>
                         <div>
                             <label>Delimitador:</label>
-                            <input class="delimiter" type="text" value=",">
+                            <input class="delimiter" type="text">
                         </div>
                     </div>
                 </div>
