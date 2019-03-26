@@ -1,6 +1,6 @@
 ## INGENIERÍA DEL CONOCIMIENTO
 
-## Enlace aqui ...
+## https://zrekoj.github.io/K-Means-Clustering/
 
 # Práctica 3: Métodos de clasificación
 
