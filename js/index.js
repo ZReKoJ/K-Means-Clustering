@@ -108,6 +108,13 @@ var data = {
     ]
 };
 
+var algorithms = {
+    "k-means": new KMeans().setData(data),
+    "bayes": new Bayes().setData(data),
+    "lloyd": new Lloyd().setData(data),
+    "som": new SOM().setData(data)
+}
+
 $(() => {
     makeResizableDiv('.setting-panel');
     makeResizableDiv('.info-panel');
@@ -137,7 +144,7 @@ function settingPanel(div) {
         };
         reader.readAsText(event.target.files[0]);
     });
-    
+
     let delimiterInput = setting.find("input[type='text'].delimiter");
     delimiterInput.val(CONFIG.DELIMITER);
     delimiterInput.on("change", (e) => {
@@ -146,7 +153,11 @@ function settingPanel(div) {
 
     let stateButton = setting.find("button.state");
     stateButton.on("click", () => {
-        console.log(getInputsData());
+        try {
+            algorithms[CONFIG.METHOD].execute(getInputsData());
+        } catch (err) {
+            notifier.error(err.message)
+        }
     });
 
     let classSelect = setting.find(".class");
@@ -171,7 +182,7 @@ function settingPanel(div) {
             attribute.val(CONFIG.ALGORITHMS[algorithm][attr]);
             attribute.on("change", (e) => {
                 CONFIG.ALGORITHMS[algorithm][attr] = attribute.val();
-                console.log(CONFIG.ALGORITHMS);
+                algorithms[algorithm].train();
             });
         });
     });
@@ -209,6 +220,10 @@ function updateData() {
         });
         table.append(row);
     });
+
+    Object.values(algorithms).forEach(algorithm => {
+        algorithm.setData(data).train();
+    });
 }
 
 function getInputsData() {
@@ -218,6 +233,12 @@ function getInputsData() {
         let label = $(element).find("label").text();
         let input = $(element).find("input[type='number']").val();
         inputsData[String(label)] = input;
+    });
+
+    Object.values(inputsData).forEach(element => {
+        if (element == undefined || element == null || element == "") {
+            throw new Error(messages.error.inputsNotFilled)
+        }
     });
 
     return inputsData;
