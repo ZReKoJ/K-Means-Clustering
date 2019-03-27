@@ -16,7 +16,14 @@ class KMeans extends Algorithm {
         super();
     }
 
-    train() {}
+    setData(data) {
+        super.setData(data);
+        return this;
+    }
+
+    train() {
+        console.log(this.data)
+    }
 
     execute(inputsData) {
         console.log(inputsData)

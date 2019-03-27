@@ -204,7 +204,7 @@ function updateData() {
 
     row = $("<tr></tr>");
     Array(data.columns).fill().forEach((element, index) => {
-        let selected = (index + 1 == data.columns) ? "selected" : "";
+        let selected = (index + 1 == CONFIG.CLASS) ? "selected" : "";
         selectInput.append($("<option value='" + (index + 1) + "' " + selected + ">" + (index + 1) + "</option>"));
         if (index + 1 != CONFIG.CLASS) {
             classifyForm.append($("<div class='data-input'><label>" + (index + 1) + ":</label><input type='number'></div>"))
