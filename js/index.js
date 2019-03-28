@@ -154,7 +154,9 @@ function settingPanel(div) {
     let stateButton = setting.find("button.state");
     stateButton.on("click", () => {
         try {
-            algorithms[CONFIG.METHOD].execute(getInputsData());
+            let resultH1 = $(".draw-panel>h1.result");
+            let result = algorithms[CONFIG.METHOD].execute(getInputsData());
+            resultH1.text(result);
         } catch (err) {
             notifier.error(err.message)
         }
@@ -207,7 +209,7 @@ function updateData() {
         let selected = (index + 1 == CONFIG.CLASS) ? "selected" : "";
         selectInput.append($("<option value='" + (index + 1) + "' " + selected + ">" + (index + 1) + "</option>"));
         if (index + 1 != CONFIG.CLASS) {
-            classifyForm.append($("<div class='data-input'><label>" + (index + 1) + ":</label><input type='number'></div>"))
+            classifyForm.append($("<div class='data-input'><label>" + (index + 1) + "</label><input type='number'></div>"))
         }
         row.append($("<th>" + (index + 1) + "</th>"));
     });
@@ -232,7 +234,7 @@ function getInputsData() {
     $(".data-input", $(".draw-panel>form.classify")).each((index, element) => {
         let label = $(element).find("label").text();
         let input = $(element).find("input[type='number']").val();
-        inputsData[String(label)] = input;
+        inputsData[String(label - 1)] = input;
     });
 
     Object.values(inputsData).forEach(element => {
