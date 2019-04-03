@@ -157,6 +157,7 @@ function settingPanel(div) {
     let stateButton = setting.find("button.state");
     stateButton.on("click", () => {
         try {
+            selectResult.empty();
             selectResult.hide();
             let result = algorithms[CONFIG.METHOD].execute(getInputsData());
             result.forEach((res, index) => {
@@ -165,6 +166,7 @@ function settingPanel(div) {
             });
             selectResult.show();
         } catch (err) {
+            console.log(err)
             notifier.error(err.message)
         }
     });

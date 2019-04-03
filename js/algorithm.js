@@ -162,19 +162,6 @@ class Bayes extends Algorithm {
     }
 
     train() {
-        this.rawData = {
-            columns: 4
-        };
-        this.data = {
-            "cla": [
-                [50, 250, 200],
-                [10, 254, 180],
-                [20, 240, 210],
-                [40, 248, 190],
-                [56, 254, 202]
-            ]
-        };
-
         this.measures = {};
 
         Object.keys(this.data).forEach(key => {
@@ -189,14 +176,44 @@ class Bayes extends Algorithm {
                 element => element / this.data[key].length
             );
             this.measures[key].matrix = [];
+            this.measures[key].matrix = Matrix.divide(
+                this.data[key].map(
+                    // calculating differences
+                    row => row.map(
+                        (element, index) => element - this.measures[key].average[index]
+                    )
+                )
+                .map(
+                    // calculating product between transposed matrix and matrix 
+                    row => math.multiply(math.transpose([row]), [row])
+                )
+                .reduce(
+                    (ac, matrix) => ac ? Matrix.sum(ac, matrix) : matrix
+                ), this.data[key].length);
         });
-
-        console.log(this.data);
-        console.log(this.measures);
     }
 
     execute(inputsData) {
-        console.log(inputsData)
+        let inputs = Object.values(inputsData).map(value => Number(value));
+        let arrayResult = [];
+        let total = 0;
+        Object.keys(this.measures).forEach(key => {
+            let result = math.inv(this.measures[key].matrix);
+            result = math.multiply([inputs], result);
+            result = math.multiply(result, math.transpose([inputs]));
+            result = Number(result[0][0]);
+            total += result;
+            arrayResult.push({
+                title: key,
+                probability: result
+            })
+        });
+        return arrayResult
+            .map(element => {
+                element.probability = 1 - (element.probability / total);
+                return element;
+            })
+            .sort((a, b) => a.probability < b.probability ? 1 : -1);
     }
 }
 

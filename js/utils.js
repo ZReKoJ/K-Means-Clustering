@@ -148,6 +148,23 @@ Object.defineProperty(Object.prototype, 'recursiveValues', {
     }
 });
 
+var Matrix = {
+    sum(a, b) {
+        return a.map(
+            (row, i) => row.map(
+                (col, j) => col + b[i][j]
+            )
+        );
+    },
+    divide(matrix, number) {
+        return matrix.map(
+            row => row.map(
+                col => col / number
+            )
+        );
+    }
+}
+
 class Notifier {
     constructor() {
         this.lastNotification = new Date().getTime();
