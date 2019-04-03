@@ -4,6 +4,21 @@ class Algorithm {
     constructor() {}
 
     setData(data) {
+        this.rawData = data;
+        return this;
+    }
+
+    train() {}
+}
+
+class KMeans extends Algorithm {
+    constructor() {
+        super();
+    }
+
+    setData(data) {
+        super.setData(data);
+
         this.data = {};
         this.classes = [];
 
@@ -20,19 +35,6 @@ class Algorithm {
             }
         });
 
-        return this;
-    }
-
-    train() {}
-}
-
-class KMeans extends Algorithm {
-    constructor() {
-        super();
-    }
-
-    setData(data) {
-        super.setData(data);
         return this;
     }
 
@@ -122,7 +124,10 @@ class KMeans extends Algorithm {
                     (ac, n) => Math.pow(Number(this.centers[key][n]) - Number(inputsData[n]), 2) + ac, 0)
             )
             total += result;
-            arrayResult.push({ title: key, probability: result })
+            arrayResult.push({
+                title: key,
+                probability: result
+            })
         });
         return arrayResult
             .map(element => {
@@ -138,7 +143,57 @@ class Bayes extends Algorithm {
         super();
     }
 
-    train() {}
+    setData(data) {
+        super.setData(data);
+
+        this.data = {};
+        data.body.forEach(row => {
+            let classTitle = row[CONFIG.CLASS - 1];
+            if (!this.data[classTitle]) {
+                this.data[classTitle] = [];
+            }
+            this.data[classTitle].push(row
+                .filter((element, index) => index + 1 != CONFIG.CLASS)
+                .map(element => Number(element))
+            );
+        });
+
+        return this;
+    }
+
+    train() {
+        this.rawData = {
+            columns: 4
+        };
+        this.data = {
+            "cla": [
+                [50, 250, 200],
+                [10, 254, 180],
+                [20, 240, 210],
+                [40, 248, 190],
+                [56, 254, 202]
+            ]
+        };
+
+        this.measures = {};
+
+        Object.keys(this.data).forEach(key => {
+            this.measures[key] = {};
+            this.measures[key].average = Array(this.rawData.columns - 1).fill(0);
+            this.data[key].forEach(row => {
+                row.forEach((element, index) => {
+                    this.measures[key]["average"][index] += element;
+                });
+            });
+            this.measures[key].average = this.measures[key].average.map(
+                element => element / this.data[key].length
+            );
+            this.measures[key].matrix = [];
+        });
+
+        console.log(this.data);
+        console.log(this.measures);
+    }
 
     execute(inputsData) {
         console.log(inputsData)

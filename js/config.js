@@ -3,7 +3,7 @@
 var CONFIG = {
     DELIMITER: ",",
     CLASS: "5",
-    METHOD: "k-means",
+    METHOD: "bayes",
     ALGORITHMS: {
         "k-means": {
             "tolerance": 0.01,
