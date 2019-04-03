@@ -159,7 +159,6 @@ function settingPanel(div) {
         try {
             selectResult.hide();
             let result = algorithms[CONFIG.METHOD].execute(getInputsData());
-            console.log(result);
             result.forEach((res, index) => {
                 let selected = (index == 0) ? " selected" : "";
                 selectResult.append($("<option" + selected + ">" + res.title + "(" + res.probability + ")" + "</option>"))
