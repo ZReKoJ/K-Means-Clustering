@@ -114,19 +114,22 @@ class KMeans extends Algorithm {
     }
 
     execute(inputsData) {
-        let min = Number.MAX_SAFE_INTEGER;
-        let keyResult;
+        let arrayResult = [];
+        let total = 0;
         Object.keys(this.centers).forEach(key => {
             let result = Math.sqrt(
                 Object.keys(this.centers[key]).reduce(
                     (ac, n) => Math.pow(Number(this.centers[key][n]) - Number(inputsData[n]), 2) + ac, 0)
             )
-            if (result < min) {
-                min = result;
-                keyResult = key;
-            }
+            total += result;
+            arrayResult.push({ title: key, probability: result })
         });
-        return keyResult;
+        return arrayResult
+            .map(element => {
+                element.probability = 1 - (element.probability / total);
+                return element;
+            })
+            .sort((a, b) => a.probability < b.probability ? 1 : -1);
     }
 }
 

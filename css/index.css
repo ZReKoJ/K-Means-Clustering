@@ -272,10 +272,13 @@
     overflow: auto;
 }
 
-.draw-panel>h1.result {
+.draw-panel>.result {
     position: absolute;
     top: 20px;
     height: 10%;
+    width: 60%;
+    background-color: var(--secondary-light-color);
+    color: var(--on-secondary-color);
     text-align: center;
 }
 

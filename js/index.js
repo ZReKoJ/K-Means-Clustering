@@ -151,12 +151,20 @@ function settingPanel(div) {
         CONFIG.DELIMITER = delimiterInput.val();
     });
 
+    let selectResult = $(".draw-panel>.result");
+    selectResult.hide();
+
     let stateButton = setting.find("button.state");
     stateButton.on("click", () => {
         try {
-            let resultH1 = $(".draw-panel>h1.result");
+            selectResult.hide();
             let result = algorithms[CONFIG.METHOD].execute(getInputsData());
-            resultH1.text(result);
+            console.log(result);
+            result.forEach((res, index) => {
+                let selected = (index == 0) ? " selected" : "";
+                selectResult.append($("<option" + selected + ">" + res.title + "(" + res.probability + ")" + "</option>"))
+            });
+            selectResult.show();
         } catch (err) {
             notifier.error(err.message)
         }
