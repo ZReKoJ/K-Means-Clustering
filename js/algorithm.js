@@ -338,9 +338,114 @@ class SOM extends Algorithm {
         super();
     }
 
-    train() {}
+    setData(data) {
+        super.setData(data);
+
+        this.classes = [];
+        this.data = this.rawData.body.map(
+            row => row
+            .filter(element => {
+                if (isNaN(element)) {
+                    this.classes.push(element);
+                    return false;
+                } else {
+                    return true;
+                }
+            })
+            .map(
+                element => Number(element)
+            )
+        );
+
+        return this;
+    }
+
+    train() {
+        let centers = {};
+        Array.from(new Set(this.classes)).forEach(c => {
+            centers[c] = new Array(this.data[0].length).fill(0);
+        });
+        this.data.forEach((row, i) => {
+            row.forEach((element, j) => {
+                centers[this.classes[i]][j] += element;
+            })
+        });
+        Object.keys(centers).forEach(key => {
+            let count = this.classes.reduce((ac, n) => key == n ? ac + 1 : ac, 0);
+            centers[key] = centers[key].map(element => element / count);
+        });
+
+        this.iteration = 0;
+        this.centers = this.iterate(centers);
+    }
+
+    iterate(centers) {
+        this.iteration++;
+        let newCenters = {};
+
+        Object.keys(centers).forEach(key => {
+            newCenters[key] = centers[key].map(element => element);
+        });
+
+        let alpha = CONFIG.ALGORITHMS["som"]["alpha-initial"] * Math.pow(
+            CONFIG.ALGORITHMS["som"]["alpha-final"] / CONFIG.ALGORITHMS["som"]["alpha-initial"],
+            this.iteration / CONFIG.ALGORITHMS["som"]["iteration"]
+        );
+
+        this.data.forEach(row => {
+            this.updateCenters(newCenters, row, alpha);
+        });
+
+        if (this.iteration <= CONFIG.ALGORITHMS["som"].iteration && !this.difference(centers, newCenters)) {
+            return this.iterate(newCenters);
+        } else {
+            return newCenters;
+        }
+    }
+
+    difference(centers, newCenters) {
+        return Object.keys(centers).every(key =>
+            Number(CONFIG.ALGORITHMS["som"].tolerance) > Math.sqrt(
+                Object.keys(centers[key]).reduce((ac, n) => Math.pow(centers[key][n] - newCenters[key][n], 2) + ac, 0)
+            )
+        );
+    }
+
+    updateCenters(centers, row, alpha) {
+        Object.keys(centers).forEach(key => {
+            let result = row.reduce(
+                    (ac, n, index) => Math.pow(n - centers[key][index], 2) + ac, 0);
+            result = Math.exp(
+                -1 * (result / (2 * Math.pow(alpha, 2)))
+            );
+            if (result >= CONFIG.ALGORITHMS["som"]["t"]) {
+                centers[key] = row.map(
+                    (element, index) => centers[key][index] + CONFIG.ALGORITHMS["som"]["learning-ratio"] * result * (element - centers[key][index])
+                );
+            }
+        });
+    }
 
     execute(inputsData) {
-        console.log(inputsData)
+        let arrayResult = [];
+        let total = 0;
+        Object.keys(this.centers).forEach(key => {
+            let result = Math.sqrt(
+                Object.keys(this.centers[key]).reduce(
+                    (ac, n) => Math.pow(Number(this.centers[key][n]) - Number(inputsData[n]), 2) + ac, 0)
+            )
+            total += result;
+            arrayResult.push({
+                title: key,
+                probability: result
+            })
+        });
+
+        return arrayResult
+            .map(element => {
+                element.probability = 1 - (element.probability / total);
+                return element;
+            })
+            .sort((a, b) => a.probability < b.probability ? 1 : -1);
     }
 }
