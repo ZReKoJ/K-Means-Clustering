@@ -222,10 +222,114 @@ class Lloyd extends Algorithm {
         super();
     }
 
-    train() {}
+    setData(data) {
+        super.setData(data);
+
+        this.classes = [];
+        this.data = this.rawData.body.map(
+            row => row
+            .filter(element => {
+                if (isNaN(element)) {
+                    this.classes.push(element);
+                    return false;
+                } else {
+                    return true;
+                }
+            })
+            .map(
+                element => Number(element)
+            )
+        );
+
+        return this;
+    }
+
+    train() {
+        let centers = {};
+        Array.from(new Set(this.classes)).forEach(c => {
+            centers[c] = new Array(this.data[0].length).fill(0);
+        });
+        this.data.forEach((row, i) => {
+            row.forEach((element, j) => {
+                centers[this.classes[i]][j] += element;
+            })
+        });
+        Object.keys(centers).forEach(key => {
+            let count = this.classes.reduce((ac, n) => key == n ? ac + 1 : ac, 0);
+            centers[key] = centers[key].map(element => element / count);
+        });
+
+        this.iteration = 0;
+        this.centers = this.iterate(centers);
+    }
+
+    iterate(centers) {
+        this.iteration++;
+        let newCenters = {};
+
+        Object.keys(centers).forEach(key => {
+            newCenters[key] = centers[key].map(element => element);
+        });
+
+        this.data.forEach(row => {
+            this.updateCenters(newCenters, row);
+        });
+
+        if (this.iteration <= CONFIG.ALGORITHMS["lloyd"].iteration && !this.difference(centers, newCenters)) {
+            return this.iterate(newCenters);
+        } else {
+            return newCenters;
+        }
+    }
+
+    difference(centers, newCenters) {
+        return Object.keys(centers).every(key =>
+            Number(CONFIG.ALGORITHMS["lloyd"].tolerance) > Math.sqrt(
+                Object.keys(centers[key]).reduce((ac, n) => Math.pow(centers[key][n] - newCenters[key][n], 2) + ac, 0)
+            )
+        );
+    }
+
+    updateCenters(centers, row) {
+        let label;
+        let min = Number.MAX_SAFE_INTEGER;
+        Object.keys(centers).forEach(key => {
+            let result = Math.sqrt(
+                row.reduce(
+                    (ac, n, index) => Math.pow(n - centers[key][index], 2) + ac, 0)
+            );
+            if (result < min) {
+                min = result;
+                label = key;
+            }
+        });
+
+        centers[label] = row.map(
+            (element, index) => centers[label][index] + (CONFIG.ALGORITHMS["lloyd"]["learning-ratio"] * (element - centers[label][index]))
+        );
+    }
 
     execute(inputsData) {
-        console.log(inputsData)
+        let arrayResult = [];
+        let total = 0;
+        Object.keys(this.centers).forEach(key => {
+            let result = Math.sqrt(
+                Object.keys(this.centers[key]).reduce(
+                    (ac, n) => Math.pow(Number(this.centers[key][n]) - Number(inputsData[n]), 2) + ac, 0)
+            )
+            total += result;
+            arrayResult.push({
+                title: key,
+                probability: result
+            })
+        });
+
+        return arrayResult
+            .map(element => {
+                element.probability = 1 - (element.probability / total);
+                return element;
+            })
+            .sort((a, b) => a.probability < b.probability ? 1 : -1);
     }
 }
 
